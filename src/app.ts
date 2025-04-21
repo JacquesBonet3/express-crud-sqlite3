@@ -1,9 +1,9 @@
 import express, { Application } from 'express';
-import {tasksRoutes} from "./modules/tasks/tasks.routes";
+import {TaskModule} from "./modules/tasks";
 
 export const createApp = (): Application => {
     const app = express();
     app.use(express.json());
-    app.use('/tasks', tasksRoutes);
+    app.use(TaskModule.basePath, TaskModule.router);
     return app;
 };
