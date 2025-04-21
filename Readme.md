@@ -17,7 +17,7 @@ A simple Task Manager API built with **Node.js**, **Express**, **TypeScript**, a
 ## Repository
 
 This project is hosted on GitHub:  
-[https://github.com/PullStackDeveloper/express-crud-sqlite3.git](https://github.com/PullStackDeveloper/express-crud-sqlite3.git)
+[https://github.com/JacquesBonet3/express-crud-sqlite3.git](https://github.com/PullStackDeveloper/express-crud-sqlite3.git)
 
 ---
 
@@ -25,7 +25,7 @@ This project is hosted on GitHub:
 
 ### Clone the Repository
 ```bash
-git clone https://github.com/PullStackDeveloper/express-crud-sqlite3.git
+git clone https://github.com/JacquesBonet3/express-crud-sqlite3.git
 cd express-crud-sqlite3
 ```
 
