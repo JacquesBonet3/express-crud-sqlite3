@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response } from 'express';
-import { taskDB } from "./tasks.db";
 import {
     CrudController,
     handleError,
@@ -7,22 +6,30 @@ import {
     sendOperationResponse,
     sendSuccessResponse,
     validateAndParseId
-} from "../../crud";
-import {HTTP_CODES} from "../../db";
-
-const API_MESSAGES = {
-    TASK_NOT_FOUND: 'Task not found',
-    INVALID_ID: 'Invalid ID',
-    TASK_UPDATED: 'Task updated successfully',
-    TASK_DELETED: 'Task deleted successfully'
-} as const;
+} from "../crud";
+import {ApiDB, HTTP_CODES} from "../db";
 
 
-export class TaskController implements CrudController {
+const API_MESSAGES = (name: string) => ({
+    NOT_FOUND: `${name} not found`,
+    INVALID_ID: `${name} Invalid ID`,
+    UPDATED: `${name} updated successfully`,
+    DELETED: `${name} deleted successfully`
+});
+
+
+export class GenericController<Model, ApiDBImplementation extends ApiDB<Model>> implements CrudController {
+    _model: ApiDB<Model>
+    _name: string;
+
+    constructor( ModelCreator: new () => ApiDBImplementation, name: string) {
+        this._model = new ModelCreator();
+        this._name = name;
+    }
 
     async readAll(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const tasks = await taskDB.getAll();
+            const tasks = await this._model.getAll();
             sendSuccessResponse(res, { statusCode: HTTP_CODES.OK, data: tasks });
         } catch (error) {
             handleError(error, next);
@@ -31,8 +38,7 @@ export class TaskController implements CrudController {
 
     async create(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const { title, completed = false } = req.body;
-            const newTask = await taskDB.create({ title, completed });
+            const newTask = await this._model.create( req.body);
             sendSuccessResponse(res, { statusCode: HTTP_CODES.CREATED, data: newTask });
         } catch (error) {
             handleError(error, next);
@@ -43,8 +49,8 @@ export class TaskController implements CrudController {
         try {
             const validationResult = await this.validateAndExecuteTaskOperation(
                 req.params.id,
-                async (id) => await taskDB.update(id, req.body),
-                API_MESSAGES.TASK_UPDATED
+                async (id) => await this._model.update(id, req.body),
+                API_MESSAGES(this._name).UPDATED
             );
             sendOperationResponse(res, validationResult);
         } catch (error) {
@@ -56,8 +62,8 @@ export class TaskController implements CrudController {
         try {
             const validationResult = await this.validateAndExecuteTaskOperation(
                 req.params.id,
-                async (id) => await taskDB.delete(id),
-                API_MESSAGES.TASK_DELETED
+                async (id) => await this._model.delete(id),
+                API_MESSAGES(this._name).DELETED
             );
             sendOperationResponse(res, validationResult);
         } catch (error) {
@@ -74,7 +80,7 @@ export class TaskController implements CrudController {
         if (!id) {
             return {
                 statusCode: HTTP_CODES.BAD_REQUEST,
-                response: { success: false, error: API_MESSAGES.INVALID_ID }
+                response: { success: false, error: API_MESSAGES(this._name).INVALID_ID }
             };
         }
 
@@ -82,7 +88,7 @@ export class TaskController implements CrudController {
         if (!success) {
             return {
                 statusCode: HTTP_CODES.NOT_FOUND,
-                response: { success: false, error: API_MESSAGES.TASK_NOT_FOUND }
+                response: { success: false, error: API_MESSAGES(this._name).NOT_FOUND }
             };
         }
 
@@ -92,5 +98,3 @@ export class TaskController implements CrudController {
         };
     }
 }
-
-export const taskController = new TaskController();

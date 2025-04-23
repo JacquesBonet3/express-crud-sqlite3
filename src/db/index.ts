@@ -1,6 +1,13 @@
 import sqlite3 from 'sqlite3';
 import {Database, open} from 'sqlite';
 
+interface ApiDB<Model> {
+    create(task: Omit<Model, 'id'>): Promise<Model>;
+    getAll(): Promise<Model[]>;
+    update(id: number, updates: Partial<Omit<Model, 'id'>>): Promise<boolean>;
+    delete(id: number): Promise<boolean>;
+}
+
 const initializeDatabase = async (): Promise<Database> => {
     return await open({
         filename: './tasks.db',
@@ -25,6 +32,7 @@ const HTTP_CODES = {
 } as const;
 
 export {
+    ApiDB,
     HTTP_CODES,
     withDatabase,
 }

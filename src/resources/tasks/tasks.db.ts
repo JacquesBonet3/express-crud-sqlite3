@@ -1,5 +1,5 @@
 import { Task } from "./tasks.type";
-import { withDatabase } from "../../db";
+import { ApiDB, withDatabase } from "../../db";
 
 const SQL_QUERIES = {
     GET_ALL: 'SELECT * FROM tasks',
@@ -12,7 +12,7 @@ const SQL_QUERIES = {
     DELETE: 'DELETE FROM tasks WHERE id = ?'
 } as const;
 
-class TaskDB {
+class TaskDB implements ApiDB<Task> {
 
     async getAll(): Promise<Task[]> {
         return withDatabase(db => db.all<Task[]>(SQL_QUERIES.GET_ALL));
@@ -50,4 +50,7 @@ class TaskDB {
     }
 }
 
-export const taskDB = new TaskDB();
+
+export {
+    TaskDB
+}

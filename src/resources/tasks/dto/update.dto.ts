@@ -1,6 +1,6 @@
 import {IsBoolean, IsOptional, IsString} from 'class-validator';
 
-export class UpdateTaskDto {
+export class UpdateDto {
     @IsString({ message: 'Title must be a string' })
     @IsOptional()
     title?: string;
