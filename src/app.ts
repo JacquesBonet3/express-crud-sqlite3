@@ -1,8 +1,9 @@
 import express, { Application } from 'express';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
-import {TaskModule} from "./resources/tasks";
+import {TaskModule} from "./modules/tasks";
 import {authErrorMiddleware, authMiddleware} from "./middlewares/authorization.middleware";
+import {LoginModule} from "./modules/login";
 
 export const createApp = (): Application => {
     const app = express();
@@ -23,6 +24,7 @@ export const createApp = (): Application => {
     app.use( authErrorMiddleware);
 
     app.use(TaskModule.basePath, TaskModule.router);
+    app.use(LoginModule.basePath, LoginModule.router);
 
     return app;
 };
