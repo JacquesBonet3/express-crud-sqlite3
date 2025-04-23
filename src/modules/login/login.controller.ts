@@ -17,7 +17,7 @@ class LoginController extends GenericController<User, UserDB> implements CrudCon
         }
         return jwt.sign(
             {userId: user.id, username: user.username},
-            process.env.JWT_SECRET || 'my password',
+            process.env.JWT_SECRET || password,
             {expiresIn: '1h'}
         );
     }
